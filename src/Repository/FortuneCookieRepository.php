@@ -40,21 +40,37 @@ class FortuneCookieRepository extends ServiceEntityRepository
 
     public function countNumberPrintedByCategory(Category $category): CategoryFortuneStats
     {
-        $qb = $this->createQueryBuilder('fc');
+        //        $qb = $this->createQueryBuilder('fc');
+        //
+        //        $qb
+        //            ->select(sprintf(
+        //                'NEW %s(
+        //                    SUM(fc.numberPrinted),
+        //                    AVG(fc.numberPrinted),
+        //                    c.name
+        //                )',
+        //                CategoryFortuneStats::class,
+        //            ))
+        //            ->join('fc.category', 'c')
+        //            ->andWhere('fc.category = :category')
+        //            ->setParameter('category', $category);
+        //
+        //        return $qb->getQuery()->getSingleResult();
 
-        $qb
-            ->select(sprintf(
-                'NEW %s(
-                    SUM(fc.numberPrinted),
-                    AVG(fc.numberPrinted),
-                    c.name
-                )',
-                CategoryFortuneStats::class,
-            ))
-            ->join('fc.category', 'c')
-            ->andWhere('fc.category = :category')
-            ->setParameter('category', $category);
+        $connection = $this->getEntityManager()->getConnection();
+        $sql = 'SELECT SUM(fc.number_printed) as fortunesPrinted, AVG(fc.number_printed) as fortunesAverage, c.name as categoryName FROM fortune_cookie fc INNER JOIN category c ON fc.category_id = c.id WHERE fc.category_id = :category';
+        $statement = $connection->prepare($sql);
+        $result = $statement->executeQuery([
+            'category' => $category->getId(),
+        ]);
 
-        return $qb->getQuery()->getSingleResult();
+        /** @var array{ fortunesPrinted: string, fortunesAverage: string, categoryName: string} $data */
+        $data = $result->fetchAssociative();
+
+        return new CategoryFortuneStats(
+            (int) $data['fortunesPrinted'],
+            (int) $data['fortunesAverage'],
+            $data['categoryName'],
+        );
     }
 }
