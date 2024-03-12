@@ -6,7 +6,7 @@ namespace App\Repository\Query;
 
 use Doctrine\ORM\QueryBuilder;
 
-class CategoryOrderByName extends AbstractQuery
+final class CategoryOrderByName extends AbstractQuery
 {
     private string $order = 'ASC';
 

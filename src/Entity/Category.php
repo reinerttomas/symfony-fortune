@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\CategoryRepository;
+use App\Repository\Criteria\FortuneCookiesStillInProduction;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -71,6 +72,14 @@ class Category
     public function getFortuneCookies(): Collection
     {
         return $this->fortuneCookies;
+    }
+
+    /**
+     * @return Collection<int, FortuneCookie>
+     */
+    public function getFortuneCookiesStillInProduction(): Collection
+    {
+        return $this->fortuneCookies->matching(FortuneCookiesStillInProduction::create());
     }
 
     public function addFortuneCookie(FortuneCookie $fortuneCookie): self
