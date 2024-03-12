@@ -48,8 +48,8 @@ class CategoryRepository extends ServiceEntityRepository
 
         $qb = $this->createQueryBuilder('c');
 
-        FortuneCookieJoinAndSelect::new($qb)
-            ->build();
+        //        FortuneCookieJoinAndSelect::new($qb)
+        //            ->build();
         CategoryOrderByName::new($qb)
             ->addOrder('DESC')
             ->build();
@@ -64,10 +64,13 @@ class CategoryRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('c');
 
+        $terms = explode(' ', $term);
+
         FortuneCookieJoinAndSelect::new($qb)
             ->build()
-            ->andWhere('c.name LIKE :term OR c.iconKey LIKE :term OR fc.fortune LIKE :term')
+            ->andWhere('c.name LIKE :term OR c.name IN (:terms) OR c.iconKey LIKE :term OR fc.fortune LIKE :term')
             ->setParameter('term', '%' . $term . '%')
+            ->setParameter('terms', $terms)
             ->addOrderBy('c.name', 'ASC');
 
         return $qb->getQuery()->getResult();
