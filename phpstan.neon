@@ -15,4 +15,4 @@ parameters:
         - var/cache/dev/Symfony/Config
 
     ignoreErrors:
-        - '#Method App\\Repository\\(\w+\\)*\w+Repository::(get|find)\w+\(\) should return ((array|iterable)<)?App\\Entity\\(\w+\\)*\w+(>)?(\|null)? but returns (object|mixed)\.#'
+        - '#Method App\\Repository\\(\w+\\)*\w+Repository::\w+\(\) should return ((array|iterable)<)?(App\\Entity\\|App\\Data\\)(\w+\\)*\w+(>)?(\|null)? but returns (object|mixed)\.#'

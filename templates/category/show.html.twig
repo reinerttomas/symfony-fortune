@@ -12,7 +12,7 @@
                 <thead class="bg-slate-500 text-white">
                     <tr>
                         <th class="border p-4">Fortunes ({{ category.fortuneCookies|length }})</th>
-                        <th class="border p-4">Print History</th>
+                        <th class="border p-4">Print History ({{ stats.fortunesPrinted|number_format }} total, {{ stats.fortunesAverage|number_format }} average )</th>
                     </tr>
                 </thead>
                 <tbody>
