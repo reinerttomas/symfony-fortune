@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  database:
+    image: mariadb:11.3
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+      MARIADB_DATABASE: ${DB_DATABASE}
+      MARIADB_USER: ${DB_USERNAME}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+    secrets:
+      - db_root_password
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - internal
+
+  adminer:
+    image: dockette/adminer:dg
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    networks:
+      - internal
+
+networks:
+  internal:
+
+volumes:
+  db_data:
+
+secrets:
+  db_root_password:
+    file: db_root_password.txt
