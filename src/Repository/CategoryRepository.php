@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Category;
+use App\Repository\Query\CategoryOrderByName;
+use App\Repository\Query\FortuneCookieJoinAndSelect;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -44,8 +46,13 @@ class CategoryRepository extends ServiceEntityRepository
         // DQL query
         // $dql = 'SELECT c FROM App\Entity\Category as c ORDER BY c.name';
 
-        $qb = $this->createQueryBuilder('c')
-            ->addOrderBy('c.name', 'ASC');
+        $qb = $this->createQueryBuilder('c');
+
+        FortuneCookieJoinAndSelect::new($qb)
+            ->build();
+        CategoryOrderByName::new($qb)
+            ->addOrder('DESC')
+            ->build();
 
         return $qb->getQuery()->getResult();
     }
@@ -57,8 +64,8 @@ class CategoryRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('c');
 
-        $qb->addSelect('fc')
-            ->leftJoin('c.fortuneCookies', 'fc')
+        FortuneCookieJoinAndSelect::new($qb)
+            ->build()
             ->andWhere('c.name LIKE :term OR c.iconKey LIKE :term OR fc.fortune LIKE :term')
             ->setParameter('term', '%' . $term . '%')
             ->addOrderBy('c.name', 'ASC');
@@ -70,8 +77,8 @@ class CategoryRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('c');
 
-        $qb->addSelect('fc')
-            ->leftJoin('c.fortuneCookies', 'fc')
+        FortuneCookieJoinAndSelect::new($qb)
+            ->build()
             ->andWhere('c.id = :id')
             ->setParameter('id', $id);
 
