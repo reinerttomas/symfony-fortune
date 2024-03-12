@@ -70,7 +70,8 @@ class CategoryRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('c');
 
-        $qb
+        $qb->addSelect('fc')
+            ->leftJoin('c.fortuneCookies', 'fc')
             ->andWhere('c.id = :id')
             ->setParameter('id', $id);
 
