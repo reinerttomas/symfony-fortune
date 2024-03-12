@@ -13,8 +13,11 @@ use Symfony\Component\Routing\Attribute\Route;
 class CategoryController extends AbstractController
 {
     #[Route('/category/{id}', name: 'app_category_show')]
-    public function show(int $id, CategoryRepository $categoryRepository, FortuneCookieRepository $fortuneCookieRepository): Response
-    {
+    public function show(
+        int $id,
+        CategoryRepository $categoryRepository,
+        FortuneCookieRepository $fortuneCookieRepository,
+    ): Response {
         $category = $categoryRepository->findWithFortunesJoin($id);
 
         if ($category === null) {

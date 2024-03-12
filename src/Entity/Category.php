@@ -30,6 +30,9 @@ class Category
     #[ORM\OneToMany(targetEntity: FortuneCookie::class, mappedBy: 'category', fetch: 'EXTRA_LAZY')]
     private Collection $fortuneCookies;
 
+    // temporary
+    private int $fortuneCookiesTotal = 0;
+
     public function __construct(string $name, string $iconKey)
     {
         $this->name = $name;
@@ -94,6 +97,18 @@ class Category
     public function removeFortuneCookie(FortuneCookie $fortuneCookie): self
     {
         $this->fortuneCookies->removeElement($fortuneCookie);
+
+        return $this;
+    }
+
+    public function getFortuneCookiesTotal(): int
+    {
+        return $this->fortuneCookiesTotal;
+    }
+
+    public function setFortuneCookiesTotal(int $fortuneCookiesTotal): self
+    {
+        $this->fortuneCookiesTotal = $fortuneCookiesTotal;
 
         return $this;
     }

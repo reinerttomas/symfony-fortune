@@ -7,6 +7,9 @@ parameters:
         - src/
         - tests/
 
+    # https://phpstan.org/config-reference#vague-typehints
+    checkMissingIterableValueType: false
+
     symfony:
         containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
     doctrine:

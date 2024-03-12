@@ -6,7 +6,7 @@ namespace App\Repository\Query;
 
 use Doctrine\ORM\QueryBuilder;
 
-final class FortuneCookieJoinAndSelect extends AbstractQuery
+final class CategoryJoinAndSelectFortuneCookie extends AbstractQuery
 {
     public function build(): QueryBuilder
     {

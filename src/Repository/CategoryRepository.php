@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Category;
+use App\Repository\Query\CategoryGroupByCategoryAndCountFortuneCookies;
+use App\Repository\Query\CategoryJoinAndSelectFortuneCookie;
 use App\Repository\Query\CategoryOrderByName;
-use App\Repository\Query\FortuneCookieJoinAndSelect;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -39,7 +40,7 @@ class CategoryRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array<int, Category>
+     * @return Category[]
      */
     public function findAllOrdered(): array
     {
@@ -48,44 +49,61 @@ class CategoryRepository extends ServiceEntityRepository
 
         $qb = $this->createQueryBuilder('c');
 
-        //        FortuneCookieJoinAndSelect::new($qb)
-        //            ->build();
+        CategoryGroupByCategoryAndCountFortuneCookies::new($qb)
+            ->build();
         CategoryOrderByName::new($qb)
             ->addOrder('DESC')
             ->build();
 
-        return $qb->getQuery()->getResult();
+        return $this->getCategoryWithFortuneCookiesTotal($qb->getQuery()->getResult());
     }
 
     /**
-     * @return array<int, Category>
+     * @return Category[]
      */
     public function search(string $term): array
     {
         $qb = $this->createQueryBuilder('c');
 
         $terms = explode(' ', $term);
+        CategoryGroupByCategoryAndCountFortuneCookies::new($qb)
+            ->build();
+        CategoryOrderByName::new($qb)
+            ->addOrder('DESC')
+            ->build();
 
-        FortuneCookieJoinAndSelect::new($qb)
-            ->build()
-            ->andWhere('c.name LIKE :term OR c.name IN (:terms) OR c.iconKey LIKE :term OR fc.fortune LIKE :term')
+        $qb->andWhere('c.name LIKE :term OR c.name IN (:terms) OR c.iconKey LIKE :term OR fc.fortune LIKE :term')
             ->setParameter('term', '%' . $term . '%')
-            ->setParameter('terms', $terms)
-            ->addOrderBy('c.name', 'ASC');
+            ->setParameter('terms', $terms);
 
-        return $qb->getQuery()->getResult();
+        return $this->getCategoryWithFortuneCookiesTotal($qb->getQuery()->getResult()); // @phpstan-ignore-line
     }
 
     public function findWithFortunesJoin(int $id): ?Category
     {
         $qb = $this->createQueryBuilder('c');
 
-        FortuneCookieJoinAndSelect::new($qb)
+        CategoryJoinAndSelectFortuneCookie::new($qb)
             ->build()
             ->andWhere('c.id = :id')
             ->orderBy('RAND()', 'ASC')
             ->setParameter('id', $id);
 
         return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    /**
+     * @return Category[]
+     */
+    private function getCategoryWithFortuneCookiesTotal(array $results): array
+    {
+        /** @var array<int, Category> $categories */
+        $categories = [];
+
+        foreach ($results as $result) {
+            $categories[] = $result['category']->setFortuneCookiesTotal($result['fortuneCookiesTotal']);
+        }
+
+        return $categories;
     }
 }
