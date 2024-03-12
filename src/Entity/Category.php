@@ -26,7 +26,7 @@ class Category
     /**
      * @var Collection<int, FortuneCookie>
      */
-    #[ORM\OneToMany(targetEntity: FortuneCookie::class, mappedBy: 'category')]
+    #[ORM\OneToMany(targetEntity: FortuneCookie::class, mappedBy: 'category', fetch: 'EXTRA_LAZY')]
     private Collection $fortuneCookies;
 
     public function __construct(string $name, string $iconKey)

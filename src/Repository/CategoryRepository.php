@@ -35,4 +35,45 @@ class CategoryRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    /**
+     * @return array<int, Category>
+     */
+    public function findAllOrdered(): array
+    {
+        // DQL query
+        // $dql = 'SELECT c FROM App\Entity\Category as c ORDER BY c.name';
+
+        $qb = $this->createQueryBuilder('c')
+            ->addOrderBy('c.name', 'ASC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return array<int, Category>
+     */
+    public function search(string $term): array
+    {
+        $qb = $this->createQueryBuilder('c');
+
+        $qb->addSelect('fc')
+            ->leftJoin('c.fortuneCookies', 'fc')
+            ->andWhere('c.name LIKE :term OR c.iconKey LIKE :term OR fc.fortune LIKE :term')
+            ->setParameter('term', '%' . $term . '%')
+            ->addOrderBy('c.name', 'ASC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findWithFortunesJoin(int $id): ?Category
+    {
+        $qb = $this->createQueryBuilder('c');
+
+        $qb
+            ->andWhere('c.id = :id')
+            ->setParameter('id', $id);
+
+        return $qb->getQuery()->getOneOrNullResult();
+    }
 }
