@@ -49,13 +49,13 @@ class CategoryRepository extends ServiceEntityRepository
 
         $qb = $this->createQueryBuilder('c');
 
-        CategoryGroupByCategoryAndCountFortuneCookies::new($qb)
+        CategoryGroupByCategoryAndCountFortuneCookies::create($qb)
             ->build();
-        CategoryOrderByName::new($qb)
+        CategoryOrderByName::create($qb)
             ->addOrder('DESC')
             ->build();
 
-        return $this->getCategoryWithFortuneCookiesTotal($qb->getQuery()->getResult());
+        return $this->getCategoryWithFortuneCookiesTotal($qb->getQuery()->getResult()); // @phpstan-ignore-line
     }
 
     /**
@@ -66,9 +66,9 @@ class CategoryRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('c');
 
         $terms = explode(' ', $term);
-        CategoryGroupByCategoryAndCountFortuneCookies::new($qb)
+        CategoryGroupByCategoryAndCountFortuneCookies::create($qb)
             ->build();
-        CategoryOrderByName::new($qb)
+        CategoryOrderByName::create($qb)
             ->addOrder('DESC')
             ->build();
 
@@ -83,7 +83,7 @@ class CategoryRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('c');
 
-        CategoryJoinAndSelectFortuneCookie::new($qb)
+        CategoryJoinAndSelectFortuneCookie::create($qb)
             ->build()
             ->andWhere('c.id = :id')
             ->orderBy('RAND()', 'ASC')
@@ -93,6 +93,7 @@ class CategoryRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param  array<int, array{ category: Category, fortuneCookiesTotal: int }>  $results
      * @return Category[]
      */
     private function getCategoryWithFortuneCookiesTotal(array $results): array
