@@ -12,7 +12,7 @@ abstract class AbstractQuery implements Queryable
     {
     }
 
-    public static function new(QueryBuilder $qb): static
+    public static function create(QueryBuilder $qb): static
     {
         return new static($qb);
     }
